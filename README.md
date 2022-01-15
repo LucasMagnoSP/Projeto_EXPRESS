@@ -18,5 +18,4 @@ v1.0115012022
 
 Futuras Atualizações :
 -Login para usuários cadastrados
--Usuários poderam rever seus dados e tambem editá-los
------------------------------------------------------------------------------------------------------------
+-Usuários poderão rever seus dados e tambem editá-los
