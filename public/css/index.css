@@ -7,5 +7,50 @@ body{
 
 }
 a{
+    color: red;
+    margin: auto;
+    padding-left: 5em;
+}
+p{
+    font-size: 50px;
+    color: red;
+    text-align: center;
+    
+}
+footer{
+    border: 2px red;
+}
+.borda{
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2em;
+    width: auto;
+    padding: 25px;
+    border: 2px solid white;
+}
+.bordaRodape{
+    margin-top: 2em;
+    margin-bottom: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+    border: 2px solid white;
+    text-align: center;
+}
+nav{
+    font-size: 1em;
+    word-spacing: 5px;
+    padding-inline: 2em;
+}
+.sucess{
+    font-size: 30px;
     color: white;
+    border: 2px solid white;
+    background-color: green;
+}
+.error{
+    font-size: 30px;
+    color: white;
+    border: 2px solid white;
+    background-color: red;
 }

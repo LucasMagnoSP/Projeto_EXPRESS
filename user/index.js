@@ -3,10 +3,9 @@ const express = require('express')
 const chalk = require('chalk')
 //Modulos Internos
 const router = express.Router()
-const path  = require('path')
 const fs = require('fs')
-
-const basePath = path.join(__dirname,'../templates')
+const { route } = require('express/lib/application')
+const res = require('express/lib/response')
 
 //Ler BODY
 router.use(
@@ -15,40 +14,75 @@ router.use(
     }),
 )
 
+//LOGIN User
+router.get('/login',(req,res)=>{
+    res.render('login')
+})
+
 //Cadastro Users
 router.get('/add', (req, res) => {
-    res.sendFile(`${basePath}/usersingin.html`)
+    res.render(`usersingin`)
 })
 router.post('/save', (req, res) => {
     console.log(req.body)
     const name = req.body.name
     const passcode = req.body.passcode
     const passconfirm = req.body.passconfirm
+    const age = req.body.age
+    var cadastroerror=false
+    var error
    
     if(passcode == "" || passconfirm == "" || name == ""){
+        cadastroerror = true
+        error = "'É nescessario preencher todos os campos para continuar'"
         console.log(chalk.bgRed.white.bold('É nescessario preencher todos os campos para continuar'))
-
     }else if(fs.existsSync(`userData/${name}.json`)){
+        cadastroerror = true
+        error =`Usuario já existente, tente novamente !`
         console.log(chalk.bgRed.white.bold(`Usuario já existente, tente novamente !`))
-
     }else if(passconfirm != passcode){
-        console.log(chalk.bgRed.white.bold(`As senhas não coincidem.`))
-        
+        cadastroerror = true
+        error =`As senhas não coincidem.`
+        console.log(chalk.bgRed.white.bold(`As senhas não coincidem.`)) 
     }else{
-        fs.writeFileSync(`userData/${name}.json`,`password : ${passcode}`)
-        console.log(chalk.bgGreen.black.bold(`Usuario cadastrado com sucesso`))   
+        fs.writeFileSync(`userData/${name}.json`,`{"nome":"${name}","idade":"${age}","senha":"${passcode}"}`)
+        var cadastrosucess = true    
+        console.log(chalk.bgGreen.black.bold(`Usuario cadastrado com sucesso`))
+        setTimeout(() =>cadastrosucess = false,5000 )   
     }
-    
-    return res.sendFile(`${basePath}/usersingin.html`)
+    setTimeout(()=>cadastroerror = false,5000)
+    return res.render(`usersingin`,{cadastrosucess,cadastroerror,error})
 })
 
-//Procura por USER  
+//CHECK DE LOGIN(EM DESENVOLVIMENTO)
+var checkAuth = function (req, res, next) {
+    const usercheck = req.body.name
+    const passcodecheck = req.body.passcode
+    const user = JSON.parse(fs.readFileSync(`./userData/${usercheck}.json`))
+    if (usercheck == user.nome & passcodecheck == user.senha) {
+      console.log('Está logado, pode continuar')
+      fs
+      next
+    } else {
+      console.log('Não está logado, faça o login para continuar!')
+      return res.render('login')
+    }
+}
+
+//Procura por USER
 router.get('/search',(req,res)=>{
-    res.sendFile(`${basePath}/usersearch.html`) 
+    res.render(`usersearch`) 
 })
 router.post('/result',(req,res)=>{
-    const userid = req.body.userid
-    return res.sendFile(`${basePath}/user.html`) //Retornar dados de Usuario(em desenvolvimento)
+    const user = req.body.userid
+    if(!fs.existsSync(`./userData/${user}.json`)){
+        console.log(chalk.bgRed.white.bold('Esse usuario nao existe'))  
+        return res.render(`404`)
+    }
+    if(fs.existsSync(`./userData/${user}.json`)){
+        const userFinal = JSON.parse(fs.readFileSync(`./userData/${user}.json`))
+        return res.render(`user`,{userFinal}) //Retornar dados de Usuario(em desenvolvimento)
+    }
 })
 
 //Redirecionar para ID do usuario
@@ -56,12 +90,12 @@ router.get('/search/:id', (req, res) => {
     const user = req.params.id 
     if(!fs.existsSync(`./userData/${user}.json`)){
         console.log(chalk.bgRed.white.bold('Esse usuario nao existe'))  
-        return res.sendFile(`${basePath}/404.html`)
+        return res.render(`404`)
     }else{
-        fs.stat(`./userData/${user}.json`,(err,stats)=>{
-            console.log(chalk.bgBlue.white.bold(`Procurando usuaro : ${user}.json`))  
-            return res.sendFile(`${basePath}/user.html`)  //Retornar dados de Usuario(em desenvolvimento)
-        })
+        if(fs.existsSync(`./userData/${user}.json`)){
+            const userFinal = JSON.parse(fs.readFileSync(`./userData/${user}.json`))
+            return res.render(`user`,{userFinal}) //Retornar dados de Usuario(em desenvolvimento)
+       }
     }
 })
 
