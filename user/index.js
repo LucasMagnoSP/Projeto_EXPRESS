@@ -4,8 +4,14 @@ const chalk = require('chalk')
 //Modulos Internos
 const router = express.Router()
 const fs = require('fs')
-const { route } = require('express/lib/application')
-const res = require('express/lib/response')
+const mysql = require('mysql')
+
+const conn = mysql.createConnection({
+    host: 'localhost',
+    user:'root',
+    password:'',
+    database: 'nodemysql'
+})
 
 //Ler BODY
 router.use(
@@ -18,6 +24,25 @@ router.use(
 router.get('/login',(req,res)=>{
     res.render('login')
 })
+router.post('/login',(req,res)=>{
+    const usercheck = req.body.name
+    const passcodecheck = req.body.passcode
+    checkAuth(usercheck,passcodecheck)
+    return userLogin == true
+})
+
+//CHECK DE LOGIN(EM DESENVOLVIMENTO)
+var checkAuth = function (req, res,next,usercheck,passcodecheck) {
+    const user = JSON.parse(fs.readFileSync(`./userData/${usercheck}.json`))
+    if (usercheck == user.nome & passcodecheck == user.senha) {
+        console.log('Está logado, pode continuar')
+        next
+    } else {
+        console.log('Não está logado, faça o login para continuar!')
+        userLogin=false
+        return res.render('login',{userLogin})
+    }
+}
 
 //Cadastro Users
 router.get('/add', (req, res) => {
@@ -29,6 +54,7 @@ router.post('/save', (req, res) => {
     const passcode = req.body.passcode
     const passconfirm = req.body.passconfirm
     const age = req.body.age
+    const query = `INSERT INTO users (name,age,password) VALUES ('${name}','${age}','${passcode}')`  //INSERIR DADOS DE USUARIO NO BANCO DE DADOS
     var cadastroerror=false
     var error
    
@@ -45,7 +71,11 @@ router.post('/save', (req, res) => {
         error =`As senhas não coincidem.`
         console.log(chalk.bgRed.white.bold(`As senhas não coincidem.`)) 
     }else{
-        fs.writeFileSync(`userData/${name}.json`,`{"nome":"${name}","idade":"${age}","senha":"${passcode}"}`)
+        conn.query(query,function(err){
+            if(err){
+                console.log(err)
+            }
+        })
         var cadastrosucess = true    
         console.log(chalk.bgGreen.black.bold(`Usuario cadastrado com sucesso`))
         setTimeout(() =>cadastrosucess = false,5000 )   
@@ -53,21 +83,6 @@ router.post('/save', (req, res) => {
     setTimeout(()=>cadastroerror = false,5000)
     return res.render(`usersingin`,{cadastrosucess,cadastroerror,error})
 })
-
-//CHECK DE LOGIN(EM DESENVOLVIMENTO)
-var checkAuth = function (req, res, next) {
-    const usercheck = req.body.name
-    const passcodecheck = req.body.passcode
-    const user = JSON.parse(fs.readFileSync(`./userData/${usercheck}.json`))
-    if (usercheck == user.nome & passcodecheck == user.senha) {
-      console.log('Está logado, pode continuar')
-      fs
-      next
-    } else {
-      console.log('Não está logado, faça o login para continuar!')
-      return res.render('login')
-    }
-}
 
 //Procura por USER
 router.get('/search',(req,res)=>{
@@ -81,7 +96,7 @@ router.post('/result',(req,res)=>{
     }
     if(fs.existsSync(`./userData/${user}.json`)){
         const userFinal = JSON.parse(fs.readFileSync(`./userData/${user}.json`))
-        return res.render(`user`,{userFinal}) //Retornar dados de Usuario(em desenvolvimento)
+        return res.render(`user`,{userFinal}) //Retornar dados de Usuario
     }
 })
 
@@ -94,7 +109,7 @@ router.get('/search/:id', (req, res) => {
     }else{
         if(fs.existsSync(`./userData/${user}.json`)){
             const userFinal = JSON.parse(fs.readFileSync(`./userData/${user}.json`))
-            return res.render(`user`,{userFinal}) //Retornar dados de Usuario(em desenvolvimento)
+            return res.render(`user`,{userFinal}) //Retornar dados de Usuario
        }
     }
 })

@@ -1,6 +1,7 @@
 //Modulos Externos
 const express = require('express')
 const exphbs = require ("express-handlebars")
+const mysql = require('mysql')
 
 //Modulos internos
 const user = require('./user')
@@ -8,17 +9,32 @@ const user = require('./user')
 const port = 5000
 const app = express()
 
-//Ler BODY
-app.use(
-    express.urlencoded({
-      extended: true,
-    }),
-)
-
 app.use(express.json())
 app.use(express.static('public'))
 app.engine('handlebars', exphbs.engine())
 app.set("view engine","handlebars")
+
+const conn = mysql.createConnection({
+    host: 'localhost',
+    user:'root',
+    password:'',
+    database: 'nodemysql'
+})
+
+conn.connect(function(err){
+    if(err){
+        console.log("erro no MySQL" + err)
+    }
+    console.log('Conectado ao MySQL')
+    app.listen(port)
+})
+
+//Ler BODY
+app.use(
+    express.urlencoded({
+      extended: true, 
+    }),
+)
 
 //USERS 
 app.use('/user',user)
@@ -31,9 +47,4 @@ app.get('/',(req,res)=>{
 // ERRO 404
 app.use(function(req,res,next){
     res.status(404).render(`404`)
-})
-
-//Port da Aplicação
-app.listen(port,()=>{
-    console.log(`Servidor aberto na porta ${port}`)
 })
