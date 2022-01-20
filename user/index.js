@@ -1,10 +1,11 @@
 //Modules Externos
 const express = require('express')
 const chalk = require('chalk')
+const mysql = require('mysql')
+
 //Modulos Internos
 const router = express.Router()
 const fs = require('fs')
-const mysql = require('mysql')
 
 const conn = mysql.createConnection({
     host: 'localhost',
@@ -20,6 +21,7 @@ router.use(
     }),
 )
 
+//(EM DESENVOLVIMENTO)
 //LOGIN User
 router.get('/login',(req,res)=>{
     res.render('login')
@@ -30,8 +32,7 @@ router.post('/login',(req,res)=>{
     checkAuth(usercheck,passcodecheck)
     return userLogin == true
 })
-
-//CHECK DE LOGIN(EM DESENVOLVIMENTO)
+//CHECK DE LOGIN
 var checkAuth = function (req, res,next,usercheck,passcodecheck) {
     const user = JSON.parse(fs.readFileSync(`./userData/${usercheck}.json`))
     if (usercheck == user.nome & passcodecheck == user.senha) {
@@ -43,6 +44,7 @@ var checkAuth = function (req, res,next,usercheck,passcodecheck) {
         return res.render('login',{userLogin})
     }
 }
+//(EM DESENVOLVIMENTO)
 
 //Cadastro Users
 router.get('/add', (req, res) => {
@@ -88,30 +90,42 @@ router.post('/save', (req, res) => {
 router.get('/search',(req,res)=>{
     res.render(`usersearch`) 
 })
-router.post('/result',(req,res)=>{
-    const user = req.body.userid
-    if(!fs.existsSync(`./userData/${user}.json`)){
-        console.log(chalk.bgRed.white.bold('Esse usuario nao existe'))  
-        return res.render(`404`)
-    }
-    if(fs.existsSync(`./userData/${user}.json`)){
-        const userFinal = JSON.parse(fs.readFileSync(`./userData/${user}.json`))
-        return res.render(`user`,{userFinal}) //Retornar dados de Usuario
-    }
+router.post(`/search/:name`,(req,res)=>{
+    const name = req.body.name
+    const sql = `SELECT * FROM users WHERE name = '${name}' `
+    console.log(sql)
+    conn.query(sql, function(err,data){
+        if(err){
+            console.log(err)
+        }
+        const user = data[0]
+        res.render('user',{user})
+    })
 })
 
-//Redirecionar para ID do usuario
-router.get('/search/:id', (req, res) => {  
-    const user = req.params.id 
-    if(!fs.existsSync(`./userData/${user}.json`)){
-        console.log(chalk.bgRed.white.bold('Esse usuario nao existe'))  
-        return res.render(`404`)
-    }else{
-        if(fs.existsSync(`./userData/${user}.json`)){
-            const userFinal = JSON.parse(fs.readFileSync(`./userData/${user}.json`))
-            return res.render(`user`,{userFinal}) //Retornar dados de Usuario
-       }
-    }
+router.get('/all',(req,res)=>{// VER TODOS USERS CADASTRADOS
+    const sql = `SELECT * FROM users`
+    conn.query(sql,function(err,data){
+        if(err){
+            console.log(err)
+        }
+        console.log(data)
+        const user = data
+        res.render('allusers',{user})
+    })
+})
+
+router.get('/search/:id', (req, res) => {  //Redirecionar para ID do usuario
+    const id = req.params.id 
+    const sql = `SELECT * FROM users WHERE idusers = ${id}`
+
+    conn.query(sql, function(err,data){
+        if(err){
+            console.log(err)
+        }
+        const user = data[0]
+        res.render('user',{user})
+    })
 })
 
 router.use(express.json())

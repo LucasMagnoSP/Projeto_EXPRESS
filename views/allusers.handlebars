@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Todos os usuarios</title>
     <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-    <h1>Dados do Usuário :</h1>
-    <br>
     <div>
-        <h1>ID : {{user.idusers}}</h1>
+        <h1>Todos usuarios cadastrados:</h1>
         <br>
-        <h1>Nome : {{user.name}}</h1>
-        <br>
-        <h1>Idade : {{user.age}}</h1>
+        {{#each user}}
+        <div class="caixa">Nome: {{this.name}}  Idade: {{this.age}}</div>
+        {{/each}}
     </div>
+    
 </body>
 </html>
