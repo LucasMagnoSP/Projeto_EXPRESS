@@ -8,6 +8,17 @@
 
 ------ Estou abeto a conselhos ou ajuda com a parte de .CSS da aplicação ! ------
 
+-----------------------------------------------------------------------------------------------------------
+
+v1.0424012022
+
+-Usuários agora podem rever e editar seus dados salvos no banco de dados.
+
+Futuras Atualizações :
+
+-Login para usuários cadastrados.(Não iniciado)
+
+-----------------------------------------------------------------------------------------------------------
 v1.0320012022
 
 -Aba para ver todos os usuários cadastrados foi adicionada.
@@ -21,7 +32,7 @@ Futuras Atualizações :
 
 -Login para usuários cadastrados.(Não iniciado)
 
--Usuários poderão rever seus dados e tambem editá-los.(Não iniciado)
+-Usuários poderão rever seus dados e tambem editá-los.(FEITO)
 
 -----------------------------------------------------------------------------------------------------------
 v1.0219012022
@@ -52,3 +63,5 @@ Futuras Atualizações :
 -Login para usuários cadastrados
 
 -Usuários poderão rever seus dados e tambem editá-los
+
+-----------------------------------------------------------------------------------------------------------

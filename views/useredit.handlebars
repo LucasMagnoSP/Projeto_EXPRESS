@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADD USER</title>
+    <link rel="stylesheet" href="/css/usersingin.css">
+</head>
+<body>
+
+    <h1>
+        EDITAR USUÁRIO
+    </h1>
+    <form action="../updateuser" method="POST">
+    <br>
+
+        <div>
+            <h2>Seu ID : {{user.idusers}}</h2>
+            <input type="hidden" name="id"  id="" value="{{user.idusers}}">
+        </div>
+        <br>
+        <div>
+            <h2>Escolha o nome de Usuario :</h2>
+            <input type="text" name="name" id="" placeholder="Digite seu usuário aqui :" value="{{user.name}}"/>    
+        </div>
+        <br>
+        <div>
+            <h2>Digite sua idade:</h2>
+            <input type="text" name="age" id="" placeholder="Digite sua idade aqui :" value="{{user.age}}"/>    
+        </div>
+        <br>
+        <div>
+            <h2>Digite sua senha</h2>
+            <input type="password" name="passcode" id="" placeholder="Digite sua senha :" value="{{user.password}}"/>
+        </div>
+        <br>
+        <div>
+            <h2>Confirme sua Senha</h2>
+            <input type="password" name="passconfirm" id="" placeholder="Confirme sua senha :"/>
+        </div>
+
+        <div>
+            <input type="submit" value="Editar"/>
+        </div>
+    </form>   
+</body>
+</html>

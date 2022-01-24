@@ -15,11 +15,7 @@ const conn = mysql.createConnection({
 })
 
 //Ler BODY
-router.use(
-    express.urlencoded({
-      extended: true,
-    }),
-)
+router.use(express.urlencoded({extended: true,}),)
 
 //(EM DESENVOLVIMENTO)
 //LOGIN User
@@ -46,7 +42,7 @@ var checkAuth = function (req, res,next,usercheck,passcodecheck) {
 }
 //(EM DESENVOLVIMENTO)
 
-//Cadastro Users
+//Cadastro Users (OK)
 router.get('/add', (req, res) => {
     res.render(`usersingin`)
 })
@@ -86,14 +82,29 @@ router.post('/save', (req, res) => {
     return res.render(`usersingin`,{cadastrosucess,cadastroerror,error})
 })
 
-//Procura por USER
+//Pagina Procura por USER (OK)
 router.get('/search',(req,res)=>{
-    res.render(`usersearch`) 
+    res.render(`usersearch`)
 })
-router.post(`/search/:name`,(req,res)=>{
-    const name = req.body.name
-    const sql = `SELECT * FROM users WHERE name = '${name}' `
-    console.log(sql)
+
+//Procura por Nome de User (OK)
+router.get('/search/:name',(req,res)=>{
+    const name = req.query.name
+    console.log(name)
+    const sql = `SELECT * FROM users WHERE name = '${name}'`
+    conn.query(sql, function(err,data){
+        if(err){
+            console.log(err)
+        }  
+        const user = data[0]
+        res.render('user',{user})
+    })
+})
+
+//Redirecionar para ID do usuario (OK)
+router.get('/id/:id', (req, res) => {  
+    const id = req.params.id 
+    const sql = `SELECT * FROM users WHERE idusers = ${id}`
     conn.query(sql, function(err,data){
         if(err){
             console.log(err)
@@ -103,7 +114,36 @@ router.post(`/search/:name`,(req,res)=>{
     })
 })
 
-router.get('/all',(req,res)=>{// VER TODOS USERS CADASTRADOS
+router.get('/edit/:id',(req,res)=>{
+    const id = req.params.id 
+    const sql = `SELECT * FROM users WHERE idusers = ${id}`
+    conn.query(sql, function(err,data){
+        if(err){
+            console.log(err)
+        }
+        const user = data[0]
+        res.render('useredit',{user})
+    })  
+})
+
+//EDITAR DADOS USERS (OK)
+router.post('/updateuser',(req,res)=>{
+    const id = req.body.id
+    const name = req.body.name
+    const age = req.body.age
+    const passcode= req.body.passcode
+
+    const sql = `UPDATE users SET name = '${name}' ,age = '${age}', password = '${passcode}' WHERE idusers = ${id}`
+    conn.query(sql, function(err){
+       if(err){ 
+           console.log(err)
+       }
+       res.render(`index`)
+    })
+})
+
+// VER TODOS USERS CADASTRADOS (OK)
+router.get('/all',(req,res)=>{
     const sql = `SELECT * FROM users`
     conn.query(sql,function(err,data){
         if(err){
@@ -112,19 +152,6 @@ router.get('/all',(req,res)=>{// VER TODOS USERS CADASTRADOS
         console.log(data)
         const user = data
         res.render('allusers',{user})
-    })
-})
-
-router.get('/search/:id', (req, res) => {  //Redirecionar para ID do usuario
-    const id = req.params.id 
-    const sql = `SELECT * FROM users WHERE idusers = ${id}`
-
-    conn.query(sql, function(err,data){
-        if(err){
-            console.log(err)
-        }
-        const user = data[0]
-        res.render('user',{user})
     })
 })
 
