@@ -10,6 +10,16 @@
 
 -----------------------------------------------------------------------------------------------------------
 
+v1.0527012022
+
+-Usuários agora podem ser removidos do banco de dados(Botão para remover está na area de dados de usuário, logo apos a pesquisa).
+
+Futuras Atualizações :
+
+-Login para usuários cadastrados.(Não iniciado)
+
+-----------------------------------------------------------------------------------------------------------
+
 v1.0424012022
 
 -Usuários agora podem rever e editar seus dados salvos no banco de dados.
@@ -46,7 +56,7 @@ Futuras Atualizações :
 
 -Login para usuários cadastrados.(Não iniciado)
 
--Usuários poderão rever seus dados e tambem editá-los.(Não iniciado)
+-Usuários poderão rever seus dados e tambem editá-los.(FEITO)
 
 -----------------------------------------------------------------------------------------------------------
 v1.0115012022 

@@ -142,6 +142,19 @@ router.post('/updateuser',(req,res)=>{
     })
 })
 
+//REMOVER USUARIO CADASTRADO
+router.post('/remove/:id',(req,res)=>{
+    const id = req.params.id
+    const sql = `DELETE FROM users WHERE idusers = ${id}`
+    conn.query(sql,function(err){
+        if(err){
+            console.log(err)
+        }
+        console.log(chalk.bgGreen.white("Usuario removido com sucesso"))
+        res.render('index')
+    })
+})
+
 // VER TODOS USERS CADASTRADOS (OK)
 router.get('/all',(req,res)=>{
     const sql = `SELECT * FROM users`
