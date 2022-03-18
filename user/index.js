@@ -1,19 +1,11 @@
 //Modules Externos
 const express = require('express')
 const chalk = require('chalk')
-const mysql = require('mysql')
 
 //Modulos Internos
 const router = express.Router()
 const fs = require('fs')
-
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user:'root',
-    password:'',
-    database: 'nodemysql'
-})
-
+const pool = require('../db/conn')
 //Ler BODY
 router.use(express.urlencoded({extended: true,}),)
 
@@ -52,7 +44,8 @@ router.post('/save', (req, res) => {
     const passcode = req.body.passcode
     const passconfirm = req.body.passconfirm
     const age = req.body.age
-    const query = `INSERT INTO users (name,age,password) VALUES ('${name}','${age}','${passcode}')`  //INSERIR DADOS DE USUARIO NO BANCO DE DADOS
+    const sql = `INSERT INTO users (??,??,??) VALUES (?,?,?)`  //INSERIR DADOS DE USUARIO NO BANCO DE DADOS
+    const data =['name','age','password',name,age,passcode]
     var cadastroerror=false
     var error
    
@@ -69,7 +62,7 @@ router.post('/save', (req, res) => {
         error =`As senhas não coincidem.`
         console.log(chalk.bgRed.white.bold(`As senhas não coincidem.`)) 
     }else{
-        conn.query(query,function(err){
+        pool.query(sql,data,function(err){
             if(err){
                 console.log(err)
             }
@@ -91,8 +84,9 @@ router.get('/search',(req,res)=>{
 router.get('/search/:name',(req,res)=>{
     const name = req.query.name
     console.log(name)
-    const sql = `SELECT * FROM users WHERE name = '${name}'`
-    conn.query(sql, function(err,data){
+    const sql = `SELECT * FROM users WHERE ?? = ?`
+    const data = ['name',name]
+    pool.query(sql,data, function(err,data){
         if(err){
             console.log(err)
         }  
@@ -104,8 +98,9 @@ router.get('/search/:name',(req,res)=>{
 //Redirecionar para ID do usuario (OK)
 router.get('/id/:id', (req, res) => {  
     const id = req.params.id 
-    const sql = `SELECT * FROM users WHERE idusers = ${id}`
-    conn.query(sql, function(err,data){
+    const sql = `SELECT * FROM users WHERE ?? = ?`
+    const data = ['idusers',id]
+    pool.query(sql,data, function(err,data){
         if(err){
             console.log(err)
         }
@@ -116,8 +111,9 @@ router.get('/id/:id', (req, res) => {
 
 router.get('/edit/:id',(req,res)=>{
     const id = req.params.id 
-    const sql = `SELECT * FROM users WHERE idusers = ${id}`
-    conn.query(sql, function(err,data){
+    const sql = `SELECT * FROM users WHERE ?? = ?`
+    const data = ['idusers',id]
+    pool.query(sql,data, function(err,data){
         if(err){
             console.log(err)
         }
@@ -132,9 +128,9 @@ router.post('/updateuser',(req,res)=>{
     const name = req.body.name
     const age = req.body.age
     const passcode= req.body.passcode
-
-    const sql = `UPDATE users SET name = '${name}' ,age = '${age}', password = '${passcode}' WHERE idusers = ${id}`
-    conn.query(sql, function(err){
+    const sql = `UPDATE users SET ?? = ? , ?? = ?, ?? = ? WHERE ?? = ?`
+    const data = ['name',name,'age',age,'password',passcode,'idusers',id]
+    pool.query(sql,data, function(err){
        if(err){ 
            console.log(err)
        }
@@ -145,8 +141,9 @@ router.post('/updateuser',(req,res)=>{
 //REMOVER USUARIO CADASTRADO
 router.post('/remove/:id',(req,res)=>{
     const id = req.params.id
-    const sql = `DELETE FROM users WHERE idusers = ${id}`
-    conn.query(sql,function(err){
+    const sql = `DELETE FROM users WHERE ?? = ?`
+    const data = ['idusers',id]
+    pool.query(sql,data,function(err){
         if(err){
             console.log(err)
         }
@@ -158,7 +155,7 @@ router.post('/remove/:id',(req,res)=>{
 // VER TODOS USERS CADASTRADOS (OK)
 router.get('/all',(req,res)=>{
     const sql = `SELECT * FROM users`
-    conn.query(sql,function(err,data){
+    pool.query(sql,function(err,data){
         if(err){
             console.log(err)
         }
